@@ -1,0 +1,22 @@
+body {
+  margin: 0;                           /* Remove default margin around the page */
+  height: 100vh;                       /* Make body full viewport height */
+  display: flex;                       /* Use Flexbox for layout */
+  flex-direction: column;              /* Stack children vertically */
+  justify-content: center;             /* Center children vertically */
+  align-items: center;                 /* Center children horizontally */
+  background: #eef;                    /* Light purple background color */
+}
+
+#gameCanvas {
+  border: 2px solid #333;              /* Dark border around the canvas */
+  background: #fff;                    /* White background for the game area */
+}
+
+#restartBtn {
+  display: none;                       /* Hide the restart button by default */
+  margin-top: 10px;                    /* Space above the button */
+  padding: 8px 16px;                   /* Padding inside the button */
+  font-size: 16px;                     /* Button text size */
+  cursor: pointer;                     /* Cursor turns to pointer on hover */
+}

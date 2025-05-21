@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Robot Runner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Game Canvas -->
+  <canvas id="gameCanvas" width="800" height="200"></canvas>
+  <!-- Restart button, initially hidden -->
+  <button id="restartBtn">Restart</button>
+
+  <!-- Introducing front-end game logic -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
