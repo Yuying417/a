@@ -15,14 +15,14 @@ window.addEventListener('load', () => {
   const groundY = canvas.height - 20;  // Ground height
   const maxJumps = 2;              // Maximum number of consecutive jumps
   let nextSpeedThreshold = 500;    // Every 500 points, the speed-up threshold
-  const flySpawnRate = 200;        // Frequency of sky obstacle generation (number of frames)
+  const flySpawnRate = 200;        // Frequency of sky obstacle generation
 
   // —— Game Status ——
   let robot, obstacles, flyingObstacles,
       spawnCounter, flyCounter,
       spawnThreshold, score, gameOver, jumpCount;
 
-  // Loading robot textures
+  // Loading robot texture
   const robotImg = new Image();
   robotImg.src = '/static/images/robot.png';
 
@@ -45,11 +45,10 @@ window.addEventListener('load', () => {
   // —— Jump processing ——
   function handleJump() {
     if (jumpCount < maxJumps) {
-      // Fixed jump height around 60px
       const v0 = -Math.sqrt(2 * gravity * 60);
       robot.vy = v0;
       jumpCount++;
-      playJumpSound(); // Jump sound effect
+      playJumpSound();
     }
   }
 
@@ -101,13 +100,13 @@ window.addEventListener('load', () => {
       jumpCount = 0;
     }
 
-    // Ground Obstacle Removal & Recovery
+    // Ground obstacles
     obstacles.forEach(o => o.x -= speed);
     if (obstacles.length && obstacles[0].x + obstacles[0].width < 0) {
       obstacles.shift();
     }
 
-    // Sky obstacle generation, movement, and recovery
+    // Sky obstacles
     flyCounter++;
     if (flyCounter >= flySpawnRate) {
       flyCounter = 0;
@@ -119,7 +118,7 @@ window.addEventListener('load', () => {
       flyingObstacles.shift();
     }
 
-    // Ground obstacle generation
+    // Spawn new ground obstacle
     spawnCounter++;
     if (spawnCounter >= spawnThreshold) {
       spawnCounter = 0;
@@ -140,13 +139,13 @@ window.addEventListener('load', () => {
     );
   }
 
-  // —— draw ——
+  // —— Draw ——
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#444';
     ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
 
-    // Drawing the robot
+    // Draw robot
     if (robotImg.complete) {
       ctx.drawImage(robotImg, robot.x, robot.y, robot.width, robot.height);
     } else {
@@ -154,29 +153,29 @@ window.addEventListener('load', () => {
       ctx.fillRect(robot.x, robot.y, robot.width, robot.height);
     }
 
-    // Drawing ground obstacles
+    // Draw ground obstacles
     ctx.fillStyle = 'firebrick';
     obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.width, o.height));
 
-    // Mapping aerial obstacles
+    // Draw sky obstacles
     ctx.fillStyle = 'orange';
     flyingObstacles.forEach(f => {
       ctx.beginPath();
-      ctx.arc(f.x + f.width / 2, f.y + f.height / 2, f.width / 2, 0, Math.PI * 2);
+      ctx.arc(f.x + f.width/2, f.y + f.height/2, f.width/2, 0, Math.PI*2);
       ctx.fill();
     });
 
-    // Scores and high scores
+    // Scores
     ctx.fillStyle = '#000';
     ctx.font = '16px sans-serif';
     ctx.fillText('Score: ' + score, 10, 20);
-    ctx.fillText('High: ' + highScore, 10, 40);
+    ctx.fillText('High: '  + highScore, 10, 40);
 
-    // Game Over Tips
+    // Game Over
     if (gameOver) {
       ctx.fillStyle = 'red';
       ctx.font = '32px sans-serif';
-      ctx.fillText('Game Over', canvas.width / 2 - 80, canvas.height / 2);
+      ctx.fillText('Game Over', canvas.width/2 - 80, canvas.height/2);
       restartBtn.style.display = 'inline-block';
     }
   }
@@ -185,25 +184,37 @@ window.addEventListener('load', () => {
   function loop() {
     if (!gameOver) {
       update();
+
       // Ground obstacle collision
       for (let o of obstacles) {
         if (collides(robot, o)) {
           playGameOverSound();
           gameOver = true;
+          // —— record check & update immediately —— 
+          if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('highScore', highScore);
+          }
           break;
         }
       }
-      // Mid-air obstacle collision
+
+      // Sky obstacle collision
       if (!gameOver) {
         for (let f of flyingObstacles) {
           if (collides(robot, f)) {
             playGameOverSound();
             gameOver = true;
+            if (score > highScore) {
+              highScore = score;
+              localStorage.setItem('highScore', highScore);
+            }
             break;
           }
         }
       }
-      // Scoring and Speed ​​​​Up
+
+      // Scoring and speed up
       if (!gameOver) {
         score++;
         if (score >= nextSpeedThreshold) {
@@ -212,6 +223,7 @@ window.addEventListener('load', () => {
         }
       }
     }
+
     draw();
     requestAnimationFrame(loop);
   }
